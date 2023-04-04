@@ -14,6 +14,7 @@ using namespace std;
 #pragma comment(lib, "mswsock.lib")
 #pragma comment(lib, "advapi32.lib")
 
+
 class Klient {
 private:
 	SOCKET socket;
@@ -24,8 +25,9 @@ public:
 		send(socket, wiadomosc.c_str(), size(wiadomosc), 0);
 	}
 	string odbstr() {
-		char odbior[5000];
-		recv(socket, odbior, 5000, 0);
+		char odbior[4096];
+		ZeroMemory(odbior, 4096);
+		recv(socket, odbior, sizeof(odbior), 0);
 		return string(odbior);
 	}
 	void wyslint(int wartosc) {
@@ -34,14 +36,26 @@ public:
 	int odbint() {
 		int wartosc;
 		recv(socket, (char*)&wartosc, sizeof(wartosc), 0);
+		wartosc = htonl(wartosc);
 		return wartosc;
 	}
 };
 void gra(Klient* kl) {
 
-
+	string dane="h";
+	int d = 4;
 
 	
+	int xd = kl->odbint();
+	cout << "Suma twoich punktow: " << xd << endl;
+
+	xd = kl->odbint();
+	cout << "Suma punktow przeciwnika: " << xd << endl;
+
+
+	cout << "Hit czy Stand (h/s)" << endl;
+	cin >> dane;
+	kl->wyslstr(dane);
 }
 
 int main(int argc, char** argv) {
@@ -60,8 +74,6 @@ int main(int argc, char** argv) {
 	if (Wynik != 0) {
 		cout << "Startup error";
 	}
-	else
-		cout << "startup ok" << endl;
 
 	struct addrinfo* wyn = NULL, * wsk = NULL, hints;
 	ZeroMemory(&hints, sizeof(hints));
@@ -76,8 +88,6 @@ int main(int argc, char** argv) {
 		cout << "getaddrinfo error";
 		WSACleanup();
 	}
-	else
-		cout << "getaddrinfo ok"<<endl;
 
 	// próby po³¹czenia a¿ siê uda
 
@@ -92,7 +102,7 @@ int main(int argc, char** argv) {
 		}
 
 		// Po³¹czenie
-
+		
 		Wynik = connect(ConnectSocket, wsk->ai_addr, (int)wsk->ai_addrlen);
 		if (Wynik == SOCKET_ERROR) {
 			closesocket(ConnectSocket);
@@ -106,17 +116,15 @@ int main(int argc, char** argv) {
 		cout << "Nieudalo sie polaczyc";
 		WSACleanup();
 	}
-	else
-		cout << "connect ok"<<endl;
 
 	//Wysy³anie inicjalizera
 
 	Klient klient(ConnectSocket);
 	gra(&klient);
-
+	
 	//Zamykanie
 
-	Wynik = shutdown(ConnectSocket, SD_SEND);
+	Wynik = shutdown(ConnectSocket, SD_BOTH);
 	if (Wynik == SOCKET_ERROR) {
 		cout << "Shutdown error" << WSAGetLastError();
 		closesocket(ConnectSocket);
