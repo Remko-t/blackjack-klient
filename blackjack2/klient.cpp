@@ -14,6 +14,36 @@ using namespace std;
 #pragma comment(lib, "mswsock.lib")
 #pragma comment(lib, "advapi32.lib")
 
+class Klient {
+private:
+	SOCKET socket;
+public:
+	Klient(SOCKET x) : socket(x) {}
+
+	void wyslstr(string wiadomosc) {
+		send(socket, wiadomosc.c_str(), size(wiadomosc), 0);
+	}
+	string odbstr() {
+		char odbior[5000];
+		recv(socket, odbior, 5000, 0);
+		return string(odbior);
+	}
+	void wyslint(int wartosc) {
+		send(socket, (char*)wartosc, sizeof(wartosc), 0);
+	}
+	int odbint() {
+		int wartosc;
+		recv(socket, (char*)&wartosc, sizeof(wartosc), 0);
+		return wartosc;
+	}
+};
+void gra(Klient* kl) {
+
+
+
+	
+}
+
 int main(int argc, char** argv) {
 
 	int Wynik;
@@ -22,10 +52,7 @@ int main(int argc, char** argv) {
 	char recivebuf[DEFAULT_BUFLEN];
 	int recivebuflen = DEFAULT_BUFLEN;
 	const char* sendbuf = "Test";
-
-	if (argc != 2) {
-		cout << "cos" << argv[0] << endl;
-	}
+	string dane;
 
 	//inicjalizacja winsock
 
@@ -76,7 +103,7 @@ int main(int argc, char** argv) {
 	}
 	freeaddrinfo(wyn);
 	if (ConnectSocket == INVALID_SOCKET) {
-		cout << "Nieuda³o siê po³¹czyæ";
+		cout << "Nieudalo sie polaczyc";
 		WSACleanup();
 	}
 	else
@@ -84,16 +111,8 @@ int main(int argc, char** argv) {
 
 	//Wysy³anie inicjalizera
 
-	Wynik = send(ConnectSocket, sendbuf, (int)strlen(sendbuf), 0);
-	if (Wynik == SOCKET_ERROR) {
-		cout << "Send error" << WSAGetLastError();
-		closesocket(ConnectSocket);
-		WSACleanup();
-	}
-	else
-		cout << "Send ok"<<endl;
-
-	cout << "Wys³ane: " << Wynik;
+	Klient klient(ConnectSocket);
+	gra(&klient);
 
 	//Zamykanie
 
@@ -103,18 +122,7 @@ int main(int argc, char** argv) {
 		closesocket(ConnectSocket);
 		WSACleanup();
 	}
-
-	do {
-		Wynik = recv(ConnectSocket, recivebuf, recivebuflen, 0);
-		if (Wynik > 0) {
-			cout << "Otrzymane: " << Wynik;
-		}
-		else if (Wynik == 0) {
-			cout << "Zamkniêto po³¹czenie";
-		}
-		else
-			cout << "Recive error";
-	} while (Wynik > 0);
+	
 
 	closesocket(ConnectSocket);
 	WSACleanup();
