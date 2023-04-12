@@ -42,10 +42,11 @@ public:
 };
 void gra(Klient* kl) {
 
-	string dane="h";
+	string dane;
+	string wynik = "gra";
+	string wyn;
 	int d = 4;
 
-	
 	int xd = kl->odbint();
 	cout << "Suma twoich punktow: " << xd << endl;
 
@@ -56,6 +57,46 @@ void gra(Klient* kl) {
 	cout << "Hit czy Stand (h/s)" << endl;
 	cin >> dane;
 	kl->wyslstr(dane);
+	
+	do {
+		dane = kl->odbstr();
+		if (dane == "s") {
+			xd = kl->odbint();
+			cout << "Suma twoich punktow: " << xd << endl;
+			xd = kl->odbint();
+			cout << "Suma punktow przeciwnika: " << xd << endl;
+			cout << "Jaka odpowiedz warjacie: "<<endl;
+			cin >> dane;
+			kl->wyslstr(dane);
+		}
+		else if (dane == "h") {
+			xd = kl->odbint();
+			cout << "Suma twoich punktow: " << xd << endl;
+			xd = kl->odbint();
+			cout << "Suma punktow przeciwnika: " << xd << endl;
+			cout << "Jaka odpowiedz warjacie: " << endl;
+			cin >> dane;
+			kl->wyslstr(dane);
+		}
+		else {
+			wynik = dane;
+			xd = kl->odbint();
+			cout << "Suma twoich punktow: " << xd << endl;
+			xd = kl->odbint();
+			cout << "Suma punktow przeciwnika: " << xd << endl;
+			wyn = kl->odbstr();
+			if (wyn == "wygrana") {
+				cout << "Wygrales" << endl;
+			}
+			else if (wyn == "przegrana") {
+				cout << "Przegrales" << endl;
+			}
+			else if (wyn == "remis") {
+				cout << "Remis" << endl;
+			}
+		}
+	} while (wynik != "koniec");
+	
 }
 
 int main(int argc, char** argv) {
