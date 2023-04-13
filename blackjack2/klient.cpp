@@ -160,8 +160,34 @@ int main(int argc, char** argv) {
 
 	//Wysy³anie inicjalizera
 
-	Klient klient(ConnectSocket);
-	gra(&klient);
+	bool kontynuacja = true;
+	string odp, odp2;
+	do {
+		Klient klient(ConnectSocket);
+		gra(&klient);
+		
+		odp2 = klient.odbstr();
+		if (odp2 == "Tak") {
+			cout << "Chcesz zagrac jeszcze raz? (Tak/Nie) " << endl;
+			cin >> odp;
+			if (odp == "Tak") {
+				klient.wyslstr(odp);
+				kontynuacja = true;
+				system("CLS");
+			}
+			else {
+				klient.wyslstr(odp);
+				kontynuacja = false;
+				cout << "Nie ma granaia";
+			}
+		}
+		else if (odp2 == "Nie") {
+			kontynuacja = false;
+			cout << "Nie ma granaia";
+		}
+		
+	} while (kontynuacja);
+	
 	
 	//Zamykanie
 
