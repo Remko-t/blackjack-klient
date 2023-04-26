@@ -14,7 +14,6 @@ using namespace std;
 #pragma comment(lib, "mswsock.lib")
 #pragma comment(lib, "advapi32.lib")
 
-
 class Klient {
 private:
 	SOCKET socket;
@@ -40,6 +39,7 @@ public:
 		return wartosc;
 	}
 };
+
 void gra(Klient* kl) {
 
 	string dane;
@@ -162,28 +162,34 @@ int main(int argc, char** argv) {
 
 	bool kontynuacja = true;
 	string odp, odp2;
+	Klient klient(ConnectSocket);
+	gra(&klient);
 	do {
-		Klient klient(ConnectSocket);
-		gra(&klient);
-		
 		odp2 = klient.odbstr();
 		if (odp2 == "Tak") {
-			cout << "Chcesz zagrac jeszcze raz? (Tak/Nie) " << endl;
-			cin >> odp;
-			if (odp == "Tak") {
-				klient.wyslstr(odp);
-				kontynuacja = true;
-				system("CLS");
-			}
-			else {
-				klient.wyslstr(odp);
-				kontynuacja = false;
-				cout << "Nie ma granaia";
-			}
+				cout << "Chcesz zagrac jeszcze raz? (Tak/Nie) " << endl;
+				cin >> odp;
+				if (odp == "Tak") {
+					klient.wyslstr(odp);
+					kontynuacja = true;
+					system("CLS");
+					Klient klient(ConnectSocket);
+					gra(&klient);
+				}
+				else if (odp == "Nie") {
+					klient.wyslstr(odp);
+					kontynuacja = false;
+					cout << "Nie ma granaia";
+				}
+				else {
+					cout << "Zla odpowiedz" << endl;
+					kontynuacja = false;
+				}
+
 		}
 		else if (odp2 == "Nie") {
 			kontynuacja = false;
-			cout << "Nie ma granaia";
+			cout << "Przeciwnik nie chce grac";
 		}
 		
 	} while (kontynuacja);
